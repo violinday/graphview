@@ -254,7 +254,7 @@ class _GraphViewAnimated extends StatefulWidget {
 }
 
 class _GraphViewAnimatedState extends State<_GraphViewAnimated> {
-  late Timer timer;
+  Timer? timer;
   late Graph graph;
   late Algorithm algorithm;
 
@@ -264,21 +264,26 @@ class _GraphViewAnimatedState extends State<_GraphViewAnimated> {
 
     algorithm = widget.algorithm;
     algorithm.init(graph);
-    startTimer();
+    _startTimer();
 
     super.initState();
   }
 
-  void startTimer() {
+  void _startTimer() {
     timer = Timer.periodic(Duration(milliseconds: widget.stepMilis), (timer) {
       algorithm.step(graph);
       update();
     });
   }
 
+
+  void _stopTimer() {
+    timer?.cancel();
+    timer = null;
+  }
   @override
   void dispose() {
-    timer.cancel();
+    timer?.cancel();
     super.dispose();
   }
 
@@ -300,6 +305,15 @@ class _GraphViewAnimatedState extends State<_GraphViewAnimated> {
               onPanUpdate: (details) {
                 graph.getNodeAtPosition(index).position += details.delta;
                 update();
+              },
+              onPanStart: (detail) {
+                _stopTimer();
+              },
+              onPanCancel: () {
+                _startTimer();
+              },
+              onPanEnd: (detail){
+                _startTimer();
               },
             ),
             top: graph.getNodeAtPosition(index).position.dy,
