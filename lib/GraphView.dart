@@ -100,7 +100,7 @@ class _GraphView extends MultiChildRenderObjectWidget {
     final result = <Widget>[];
 
     graph.nodes.forEach((node) {
-      var widget = node.data ?? builder(node);
+      var widget = builder(node);
       result.add(widget);
     });
 
@@ -245,7 +245,7 @@ class _GraphViewAnimated extends StatefulWidget {
   _GraphViewAnimated(
       {Key? key, required this.graph, required this.algorithm, this.paint, required NodeWidgetBuilder builder}) {
     graph.nodes.forEach((node) {
-      nodes.add(node.data ?? builder(node));
+      nodes.add(builder(node));
     });
   }
 

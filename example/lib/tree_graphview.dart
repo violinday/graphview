@@ -64,9 +64,9 @@ class _TreeViewPageState extends State<TreeViewPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    final node12 = Node.Id(r.nextInt(100));
+                    final node12 = Node.Id(DateTime.now().millisecond);
                     var edge = graph.getNodeAtPosition(r.nextInt(graph.nodeCount()));
-                    print(edge);
+                    print('edge: $edge');
                     graph.addEdge(edge, node12);
                     setState(() {});
                   },
@@ -150,6 +150,6 @@ class _TreeViewPageState extends State<TreeViewPage> {
       ..siblingSeparation = (100)
       ..levelSeparation = (150)
       ..subtreeSeparation = (150)
-      ..orientation = (BuchheimWalkerConfiguration.ORIENTATION_TOP_BOTTOM);
+      ..orientation = (BuchheimWalkerConfiguration.ORIENTATION_LEFT_RIGHT);
   }
 }

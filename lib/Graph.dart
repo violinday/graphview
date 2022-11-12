@@ -114,9 +114,6 @@ class Graph {
     return _nodes[position];
   }
 
-  @Deprecated('Please use the builder and id mechanism to build the widgets')
-  Node getNodeAtUsingData(Widget data) => _nodes.firstWhere((element) => element.data == data);
-
   Node getNodeUsingKey(ValueKey key) => _nodes.firstWhere((element) => element.key == key);
 
   Node getNodeUsingId(dynamic id) => _nodes.firstWhere((element) => element.key == ValueKey(id));
@@ -147,13 +144,7 @@ class Graph {
 class Node {
   ValueKey? key;
 
-  @Deprecated('Please use the builder and id mechanism to build the widgets')
   Widget? data;
-
-  @Deprecated('Please use the Node.Id')
-  Node(this.data, {Key? key}) {
-    this.key = ValueKey(key?.hashCode ?? data.hashCode);
-  }
 
   Node.Id(dynamic id) {
     key = ValueKey(id);
