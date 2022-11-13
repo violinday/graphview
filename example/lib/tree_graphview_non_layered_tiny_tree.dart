@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:graphview/GraphView.dart';
 
-class TreeViewPage extends StatefulWidget {
+class TinyTreeViewPage extends StatefulWidget {
   @override
   _TreeViewPageState createState() => _TreeViewPageState();
 }
 
-class _TreeViewPageState extends State<TreeViewPage> {
+class _TreeViewPageState extends State<TinyTreeViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,39 +18,6 @@ class _TreeViewPageState extends State<TreeViewPage> {
           children: [
             Wrap(
               children: [
-                Container(
-                  width: 100,
-                  child: TextFormField(
-                    initialValue: builder.siblingSeparation.toString(),
-                    decoration: InputDecoration(labelText: 'Sibling Separation'),
-                    onChanged: (text) {
-                      builder.siblingSeparation = int.tryParse(text) ?? 100;
-                      this.setState(() {});
-                    },
-                  ),
-                ),
-                Container(
-                  width: 100,
-                  child: TextFormField(
-                    initialValue: builder.levelSeparation.toString(),
-                    decoration: InputDecoration(labelText: 'Level Separation'),
-                    onChanged: (text) {
-                      builder.levelSeparation = int.tryParse(text) ?? 100;
-                      this.setState(() {});
-                    },
-                  ),
-                ),
-                Container(
-                  width: 100,
-                  child: TextFormField(
-                    initialValue: builder.subtreeSeparation.toString(),
-                    decoration: InputDecoration(labelText: 'Subtree separation'),
-                    onChanged: (text) {
-                      builder.subtreeSeparation = int.tryParse(text) ?? 100;
-                      this.setState(() {});
-                    },
-                  ),
-                ),
                 Container(
                   width: 100,
                   child: TextFormField(
@@ -82,15 +49,16 @@ class _TreeViewPageState extends State<TreeViewPage> {
                   maxScale: 5.6,
                   child: GraphView(
                     graph: graph,
-                    algorithm: BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
+                    algorithm: NonLayeredTidyAlgorithm(
+                        configuration: builder,
+                        edgeRender: NonLayeredTidyTreeEdgeRender(builder..orientation)),
                     paint: Paint()
                       ..color = Colors.green
                       ..strokeWidth = 1
                       ..style = PaintingStyle.stroke,
                     builder: (Node node) {
                       // I can decide what widget should be shown here based on the id
-                      var a = node.key!.value.toString();
-                      return rectangleWidget(a);
+                      return rectangleWidget(node);
                     },
                   )),
             ),
@@ -100,12 +68,16 @@ class _TreeViewPageState extends State<TreeViewPage> {
 
   Random r = Random();
 
-  Widget rectangleWidget(String a) {
+  Widget rectangleWidget(Node node) {
     return InkWell(
       onTap: () {
-        print('clicked');
+        final node12 = Node.Id(DateTime.now().millisecondsSinceEpoch.toDouble());
+        print('edge: $node');
+        graph.addEdge(node, node12);
+        setState(() {});
       },
       child: Container(
+        height: node.height > 0 ? node.height : max(Random().nextInt(100).toDouble(), 50),
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
@@ -113,12 +85,12 @@ class _TreeViewPageState extends State<TreeViewPage> {
               BoxShadow(color: Colors.blue[100]!, spreadRadius: 1),
             ],
           ),
-          child: Text('Node ${a}')),
+          child: Text('Node ${node.key!.value.toString()}')),
     );
   }
 
   final Graph graph = Graph()..isTree = true;
-  BuchheimWalkerConfiguration builder = BuchheimWalkerConfiguration();
+  NonLayeredTidyConfiguration builder = NonLayeredTidyConfiguration();
 
   @override
   void initState() {
@@ -146,10 +118,6 @@ class _TreeViewPageState extends State<TreeViewPage> {
     graph.addEdge(node4, node11, paint: Paint()..color = Colors.red);
     graph.addEdge(node11, node12);
 
-    builder
-      ..siblingSeparation = (100)
-      ..levelSeparation = (150)
-      ..subtreeSeparation = (150)
-      ..orientation = (BuchheimWalkerConfiguration.ORIENTATION_LEFT_RIGHT);
+    builder..orientation = (NonLayeredTidyConfiguration.ORIENTATION_TOP_BOTTOM);
   }
 }

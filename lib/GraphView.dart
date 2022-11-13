@@ -7,7 +7,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:collection/collection.dart' show IterableExtension;
+import 'package:collection/collection.dart' show DelegatingQueue, IterableExtension, QueueList;
 
 part 'Graph.dart';
 
@@ -38,13 +38,8 @@ part 'tree/BuchheimWalkerNodeData.dart';
 part 'tree/TreeEdgeRenderer.dart';
 
 part 'non_layered_tidy_trees/NonLayeredTidyTreeEdgeRenderer.dart';
-
 part 'non_layered_tidy_trees/NonLayeredTidyAlgorithm.dart';
-
 part 'non_layered_tidy_trees/NonLayeredTidyTreeNode.dart';
-
-part 'non_layered_tidy_trees/Marshall.dart';
-
 part 'non_layered_tidy_trees/BoundingBox.dart';
 part 'non_layered_tidy_trees/NonLayeredTidyConfiguration.dart';
 

@@ -3,6 +3,8 @@ part of graphview;
 
 class BoundingBox {
   double width, height;
+  double left = double.maxFinite;
+  double top =  double.maxFinite;
 
   BoundingBox(this.width, this.height);
 

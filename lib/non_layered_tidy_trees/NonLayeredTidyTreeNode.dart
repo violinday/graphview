@@ -1,49 +1,25 @@
 part of graphview;
 
+typedef EachNode = void Function(NonLayeredTidyTreeNode node);
+
 class NonLayeredTidyTreeNode {
 // input
   double width, height;
 
   List<NonLayeredTidyTreeNode> children = [];
-  double hgap = 10, vgap =10;
+  double hgap = 10, vgap = 10;
 
 // output
   double x = 0, y = 0;
 
+  int depth = 0;
+
   NonLayeredTidyTreeNode(this.width, this.height, this.children);
 
   BoundingBox getBoundingBox() {
-    BoundingBox result = BoundingBox(0, 0);
-    _getBoundingBox(this, result);
+    var result = BoundingBox(0, 0);
+    getNodeBoundingBox(this, result);
     return result;
-  }
-
-  static void _getBoundingBox(NonLayeredTidyTreeNode tree, BoundingBox b) {
-    b.width = max(b.width, tree.x + tree.width);
-    b.height = max(b.height, tree.y + tree.height);
-    for (NonLayeredTidyTreeNode child in tree.children) {
-      _getBoundingBox(child, b);
-    }
-  }
-
-  void moveRight(double move) {
-    x += move;
-    for (NonLayeredTidyTreeNode child in children) {
-      child.moveRight(move);
-    }
-  }
-
-  void normalizeX() {
-    double minX = getMinX();
-    moveRight(-minX);
-  }
-
-  double getMinX() {
-    double res = x;
-    for (NonLayeredTidyTreeNode child in children) {
-      res = min(child.getMinX(), res);
-    }
-    return res;
   }
 
   int size() {
@@ -77,12 +53,45 @@ class NonLayeredTidyTreeNode {
     }
   }
 
+  void eachNode(EachNode callback) {
+    Queue<NonLayeredTidyTreeNode> nodes = QueueList();
+    nodes.add(this);
+    while (nodes.isNotEmpty) {
+      var current = nodes.removeFirst();
+      callback(current);
+      nodes.addAll(current.children);
+    }
+  }
+
+  void translate({double tx = 0, double ty = 0}) {
+    eachNode((node) {
+      node.x += tx;
+      node.y += ty;
+    });
+  }
+
+  void right2left() {
+    BoundingBox bb = getBoundingBox();
+    eachNode((node) => {node.x = node.x - (node.x - bb.left) * 2 - node.width});
+    translate(tx: bb.width, ty: 0);
+  }
+
+  void down2up() {
+    BoundingBox bb = getBoundingBox();
+    eachNode((node) => {node.y = node.y - (node.y - bb.top) * 2 - node.height});
+    translate(tx: 0, ty: bb.height);
+  }
+
   int getDepth() {
     int res = 1;
     for (NonLayeredTidyTreeNode child in children) {
       res = max(res, child.getDepth() + 1);
     }
     return res;
+  }
+
+  bool isRoot () {
+    return depth == 0;
   }
 
   void addGap(double hgap, double vgap) {
@@ -128,18 +137,6 @@ class NonLayeredTidyTreeNode {
     }
   }
 
-  void layer() {
-    _layer(0);
-  }
-
-  void _layer(double d) {
-    y = d;
-    d += height;
-    for (NonLayeredTidyTreeNode child in children) {
-      child._layer(d);
-    }
-  }
-
   void randExpand(NonLayeredTidyTreeNode t, Random r) {
     t.y += height;
     int i = r.nextInt(children.length + 1);
@@ -152,5 +149,67 @@ class NonLayeredTidyTreeNode {
 
   void addKid(NonLayeredTidyTreeNode t) {
     children.add(t);
+  }
+
+  /// Node Utils
+
+  static void convertBack(Object converted, NonLayeredTidyTreeNode root, bool isHorizontal) {
+    Tree conv = converted as Tree;
+    if (isHorizontal) {
+      root.y = converted.x;
+    } else {
+      root.x = converted.x;
+    }
+    for (int i = 0; i < conv.c.length; i++) {
+      convertBack(conv.c[i], root.children[i], isHorizontal);
+    }
+  }
+
+  static void getNodeBoundingBox(NonLayeredTidyTreeNode tree, BoundingBox b) {
+    b.left = min(b.left, tree.x);
+    b.top = min(b.top, tree.y);
+    b.width = max(b.width, tree.x + tree.width);
+    b.height = max(b.height, tree.y + tree.height);
+    for (var child in tree.children) {
+      getNodeBoundingBox(child, b);
+    }
+  }
+
+  static void layer(NonLayeredTidyTreeNode node, bool isHorizontal, double d) {
+    if (isHorizontal) {
+      node.x = d;
+      d += node.width;
+    } else {
+      node.y = d;
+      d += node.height;
+    }
+
+    for (var child in node.children) {
+      layer(child, isHorizontal, d);
+    }
+  }
+
+  static void moveRight(NonLayeredTidyTreeNode node, double move, bool isHorizontal) {
+    if (isHorizontal) {
+      node.y += move;
+    } else {
+      node.x += move;
+    }
+    for (var child in node.children) {
+      moveRight(child, move, isHorizontal);
+    }
+  }
+
+  static double getMin(NonLayeredTidyTreeNode node, bool isHorizontal) {
+    var res = isHorizontal ? node.y : node.x;
+    for (var child in node.children) {
+      res = min(getMin(child, isHorizontal), res);
+    }
+    return res;
+  }
+
+  static void normalize(NonLayeredTidyTreeNode node, bool isHorizontal) {
+    var min = getMin(node, isHorizontal);
+    moveRight(node, -min, isHorizontal);
   }
 }

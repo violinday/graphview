@@ -8,6 +8,7 @@ import 'directed_graphview.dart';
 import 'graph_cluster_animated.dart';
 import 'layer_graphview_json.dart';
 import 'tree_graphview.dart';
+import 'tree_graphview_non_layered_tiny_tree.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,6 +32,24 @@ class Home extends StatelessWidget {
       child: Scaffold(
         body: Center(
           child: Column(children: [
+            SizedBox(
+              height: 20,
+            ),
+            MaterialButton(
+                color: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TinyTreeViewPage(),
+                  ),
+                ),
+                child: Text(
+                  'Tree View (NonLayeredTinyTree)',
+                  style: TextStyle(fontSize: 30),
+                )),
             SizedBox(
               height: 20,
             ),

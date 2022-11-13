@@ -1,12 +1,9 @@
 part of graphview;
 
-class Configuration {
-
-}
-
 class NonLayeredTidyTreeEdgeRender extends EdgeRenderer {
 
-  NonLayeredTidyTreeEdgeRender();
+  NonLayeredTidyConfiguration configuration;
+  NonLayeredTidyTreeEdgeRender(this.configuration);
 
   var linePath = Path();
 
@@ -20,17 +17,34 @@ class NonLayeredTidyTreeEdgeRender extends EdgeRenderer {
         var edgePaint = (edge?.paint ?? paint)..style = PaintingStyle.stroke;
         edgePaint.color = Colors.red;
         linePath.reset();
-        // position at the middle-top of the child
-        linePath.moveTo((child.x + child.width / 2), child.y);
-        // // draws a line from the child's middle-top halfway up to its parent
-        // linePath.lineTo(child.x + child.width / 2, child.y);
-        // // draws a line from the previous point to the middle of the parents width
-        // linePath.lineTo(node.x + node.width / 2, child.y);
-        //
-        // // position at the middle of the level separation under the parent
-        // linePath.moveTo(node.x + node.width / 2, child.y);
-        // draws a line up to the parents middle-bottom
-        linePath.lineTo(node.x + node.width / 2, node.y + node.height);
+
+        switch (configuration.orientation) {
+          case NonLayeredTidyConfiguration.ORIENTATION_TOP_BOTTOM:
+            linePath.moveTo((child.x + child.width / 2), child.y);
+            linePath.lineTo(node.x + node.width / 2, node.y + node.height);
+            break;
+          case NonLayeredTidyConfiguration.ORIENTATION_BOTTOM_TOP:
+            linePath.moveTo((child.x + child.width / 2), child.y + child.height);
+            linePath.lineTo(node.x + node.width / 2, node.y);
+            break;
+          case NonLayeredTidyConfiguration.ORIENTATION_LEFT_RIGHT:
+            linePath.moveTo(child.x, child.y + child.height/2);
+            linePath.lineTo(node.x + node.width, node.y + node.height/2);
+            break;
+          case NonLayeredTidyConfiguration.ORIENTATION_RIGHT_LEFT:
+            linePath.moveTo(child.x + child.width, child.y + child.height/2);
+            linePath.lineTo(node.x, node.y + node.height/2);
+            break;
+          default:
+            if(node.x < child.x) {
+              linePath.moveTo(child.x, child.y + child.height/2);
+              linePath.lineTo(node.x + node.width, node.y + node.height/2);
+            } else {
+              linePath.moveTo(child.x + child.width, child.y + child.height/2);
+              linePath.lineTo(node.x, node.y + node.height/2);
+            }
+        }
+
 
         canvas.drawPath(linePath, edgePaint);
       });
