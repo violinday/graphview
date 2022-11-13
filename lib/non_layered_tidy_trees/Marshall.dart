@@ -1,20 +1,18 @@
-
-import 'NonLayeredTidyTreeNode.dart';
-import 'NonLayeredTidyAlgorithm.dart';
+part of graphview;
 
 class Marshall{
 
-	dynamic convert(TreeNode? root) {
+	Tree? convert(NonLayeredTidyTreeNode? root) {
 		if(root == null) return null;
 		List<Tree> children = [];
-		for(int i = 0 ; i < children.length ; i++){
+		for(int i = 0 ; i < root.children.length ; i++){
 			children.add(convert(root.children[i]) as Tree);
 		}
-		return Tree(root.width,root.height,root.y, children);
+		return Tree(root.width, root.height, root.y, children);
 	}
 
 
-	void convertBack(Object converted, TreeNode root) {
+	void convertBack(Object converted, NonLayeredTidyTreeNode root) {
 		Tree conv = converted as Tree;
 		root.x = conv.x;
 		for(int i = 0 ; i < conv.c.length ; i++){
@@ -23,7 +21,7 @@ class Marshall{
 		
 	}
 
-	void runOnConverted(Object root) {
-		NonLayeredTidyAlgorithm.layout(root as Tree);
+	void runOnConverted(NonLayeredTidyAlgorithm algorithm, Object root) {
+		algorithm.layout(root as Tree);
 	}
 }

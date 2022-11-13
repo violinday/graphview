@@ -37,6 +37,17 @@ part 'tree/BuchheimWalkerNodeData.dart';
 
 part 'tree/TreeEdgeRenderer.dart';
 
+part 'non_layered_tidy_trees/NonLayeredTidyTreeEdgeRenderer.dart';
+
+part 'non_layered_tidy_trees/NonLayeredTidyAlgorithm.dart';
+
+part 'non_layered_tidy_trees/NonLayeredTidyTreeNode.dart';
+
+part 'non_layered_tidy_trees/Marshall.dart';
+
+part 'non_layered_tidy_trees/BoundingBox.dart';
+part 'non_layered_tidy_trees/NonLayeredTidyConfiguration.dart';
+
 typedef NodeWidgetBuilder = Widget Function(Node node);
 
 class GraphView extends StatefulWidget {

@@ -64,7 +64,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    final node12 = Node.Id(DateTime.now().millisecond);
+                    final node12 = Node.Id(DateTime.now().millisecondsSinceEpoch.toDouble());
                     var edge = graph.getNodeAtPosition(r.nextInt(graph.nodeCount()));
                     print('edge: $edge');
                     graph.addEdge(edge, node12);
@@ -82,14 +82,16 @@ class _TreeViewPageState extends State<TreeViewPage> {
                   maxScale: 5.6,
                   child: GraphView(
                     graph: graph,
-                    algorithm: BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
+                    algorithm: NonLayeredTidyAlgorithm(
+                        configuration: NonLayeredTidyConfiguration(),
+                        edgeRender: NonLayeredTidyTreeEdgeRender()),
                     paint: Paint()
                       ..color = Colors.green
                       ..strokeWidth = 1
                       ..style = PaintingStyle.stroke,
                     builder: (Node node) {
                       // I can decide what widget should be shown here based on the id
-                      var a = node.key!.value as int?;
+                      var a = node.key!.value.toString();
                       return rectangleWidget(a);
                     },
                   )),
@@ -100,7 +102,7 @@ class _TreeViewPageState extends State<TreeViewPage> {
 
   Random r = Random();
 
-  Widget rectangleWidget(int? a) {
+  Widget rectangleWidget(String a) {
     return InkWell(
       onTap: () {
         print('clicked');

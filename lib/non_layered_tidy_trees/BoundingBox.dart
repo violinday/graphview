@@ -1,5 +1,5 @@
 
-import 'dart:math';
+part of graphview;
 
 class BoundingBox {
   double width, height;

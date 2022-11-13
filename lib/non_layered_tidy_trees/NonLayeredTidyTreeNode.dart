@@ -1,37 +1,34 @@
-import 'dart:math';
+part of graphview;
 
-import 'package:flutter/cupertino.dart';
-
-import 'BoundingBox.dart';
-
-class TreeNode {
+class NonLayeredTidyTreeNode {
 // input
   double width, height;
-  List<TreeNode> children = [];
-  double hgap = 0, vgap = 0;
+
+  List<NonLayeredTidyTreeNode> children = [];
+  double hgap = 10, vgap =10;
 
 // output
   double x = 0, y = 0;
 
-  TreeNode(this.width, this.height, List<TreeNode> children);
+  NonLayeredTidyTreeNode(this.width, this.height, this.children);
 
-  BoundingBox getBoundingBox(TreeNode child) {
+  BoundingBox getBoundingBox() {
     BoundingBox result = BoundingBox(0, 0);
     _getBoundingBox(this, result);
     return result;
   }
 
-  static void _getBoundingBox(TreeNode tree, BoundingBox b) {
+  static void _getBoundingBox(NonLayeredTidyTreeNode tree, BoundingBox b) {
     b.width = max(b.width, tree.x + tree.width);
     b.height = max(b.height, tree.y + tree.height);
-    for (TreeNode child in tree.children) {
+    for (NonLayeredTidyTreeNode child in tree.children) {
       _getBoundingBox(child, b);
     }
   }
 
   void moveRight(double move) {
     x += move;
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       child.moveRight(move);
     }
   }
@@ -43,7 +40,7 @@ class TreeNode {
 
   double getMinX() {
     double res = x;
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       res = min(child.getMinX(), res);
     }
     return res;
@@ -51,7 +48,7 @@ class TreeNode {
 
   int size() {
     int res = 1;
-    for (TreeNode node in children) {
+    for (NonLayeredTidyTreeNode node in children) {
       res += node.size();
     }
     return res;
@@ -68,21 +65,21 @@ class TreeNode {
         (xStart + tolerance < xEnd2 - tolerance && xEnd - tolerance > xStart2 + tolerance);
   }
 
-  bool overlapsWith(TreeNode other) {
+  bool overlapsWith(NonLayeredTidyTreeNode other) {
     return overlap(x, x + width, other.x, other.x + other.width) &&
         overlap(y, y + height, other.y, other.y + other.height);
   }
 
-  void allNodes(List<TreeNode> nodes) {
+  void allNodes(List<NonLayeredTidyTreeNode> nodes) {
     nodes.add(this);
-    for (TreeNode node in children) {
+    for (NonLayeredTidyTreeNode node in children) {
       node.allNodes(nodes);
     }
   }
 
   int getDepth() {
     int res = 1;
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       res = max(res, child.getDepth() + 1);
     }
     return res;
@@ -93,7 +90,7 @@ class TreeNode {
     this.vgap += vgap;
     this.width += 2 * hgap;
     this.height += 2 * vgap;
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       child.addGap(hgap, vgap);
     }
   }
@@ -101,7 +98,7 @@ class TreeNode {
   void addSize(double hsize, double vsize) {
     this.width += hsize;
     this.height += vsize;
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       child.addSize(hsize, vsize);
     }
   }
@@ -109,14 +106,14 @@ class TreeNode {
   void addGapPerDepth(int gapPerDepth, int depth, int maxDepth) {
     this.hgap += (maxDepth - depth) * gapPerDepth;
     this.width += 2 * (maxDepth - depth) * gapPerDepth;
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       child.addGapPerDepth(gapPerDepth, depth + 1, maxDepth);
     }
   }
 
   void print() {
     debugPrint("TreeNode($x, $y $width, $height");
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       debugPrint(", ");
       child.print();
     }
@@ -126,7 +123,7 @@ class TreeNode {
   void mul(double w, double h) {
     width *= w;
     height *= h;
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       child.mul(w, h);
     }
   }
@@ -138,12 +135,12 @@ class TreeNode {
   void _layer(double d) {
     y = d;
     d += height;
-    for (TreeNode child in children) {
+    for (NonLayeredTidyTreeNode child in children) {
       child._layer(d);
     }
   }
 
-  void randExpand(TreeNode t, Random r) {
+  void randExpand(NonLayeredTidyTreeNode t, Random r) {
     t.y += height;
     int i = r.nextInt(children.length + 1);
     if (i == children.length) {
@@ -153,7 +150,7 @@ class TreeNode {
     }
   }
 
-  void addKid(TreeNode t) {
+  void addKid(NonLayeredTidyTreeNode t) {
     children.add(t);
   }
 }
